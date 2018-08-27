@@ -14,7 +14,7 @@ umask 022
 TOP_DIR=$(cd $(dirname "$0") && pwd)
 FILES=$TOP_DIR/files
 
-LOCALRC = $1
+LOCALRC=$1
 
 if [ ! -n $LOCALRC ]; then
     echo "missing localrc."
