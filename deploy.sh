@@ -14,7 +14,15 @@ umask 022
 TOP_DIR=$(cd $(dirname "$0") && pwd)
 FILES=$TOP_DIR/files
 
-source $TOP_DIR/localrc
+LOCALRC = $1
+
+if [ ! -d "$dest" ]; then
+    echo "missing localrc."
+    exit
+fi
+source $1
+
+#source $TOP_DIR/localrc
 source $TOP_DIR/defaultrc
 source $TOP_DIR/functions
 source $TOP_DIR/lib/functions-common
