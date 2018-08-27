@@ -1,0 +1,19 @@
+#!/bin/bash
+
+function add_nova_sudoer {
+    cat <<EOF | sudo tee /etc/sudoers.d/nova
+Defaults:nova !requiretty
+    
+nova ALL = (root) NOPASSWD: $BIN_DIR/nova-rootwrap $NOVA_CONF_DIR/rootwrap.conf *
+nova ALL = (root) NOPASSWD: /usr/bin/privsep-helper *
+EOF
+}
+
+function add_neutron_sudoer {
+    cat <<EOF | sudo tee /etc/sudoers.d/neutron
+Defaults:neutron !requiretty
+
+neutron ALL = (root) NOPASSWD: $BIN_DIR/neutron-rootwrap /openstack/etc/neutron/rootwrap.conf *
+neutron ALL = (root) NOPASSWD: $BIN_DIR/neutron-rootwrap-daemon /openstack/etc/neutron/rootwrap.conf
+EOF
+}

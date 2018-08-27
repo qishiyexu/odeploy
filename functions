@@ -1,0 +1,241 @@
+#!/bin/bash
+
+
+
+CURL_GET="${CURL_GET:-curl -g}"
+
+
+function disable_firewalld {
+    systemctl disable firewalld 
+    systemctl stop firewalld
+}
+
+function disable_selinux {
+    setenforce 0
+    sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+}
+
+
+function is_package_installed {
+    if [[ -z "$@" ]]; then
+        return 1
+    fi
+
+    rpm --quiet -q "$@"
+}
+
+function yum_install {
+    local result parse_yum_result
+
+    [[ "$OFFLINE" = "True" ]] && return
+    
+    parse_yum_result='              \
+        BEGIN { result=0 }          \
+        /^YUM_FAILED/ { result=$2 } \
+        /^No package/ { result=2 }  \
+        /^Failed:/    { result=2 }  \
+        //{ print }                 \
+        END { exit result }'
+    (sudo "${YUM:-yum}" install -y "$@" 2>&1 || echo YUM_FAILED $?) \
+        | awk "$parse_yum_result" && result=$? || result=$?
+
+    if [ "$result" == 2 ]; then
+        die "Detected fatal package install failure"
+    fi
+
+    return "$result"
+}
+
+function yum_install_if_not_exist {
+    for pkg in $@; do
+        if !(is_package_installed $pkg); then
+            yum_install $pkg
+        fi
+    done
+}
+
+function install_epel {
+    if sudo yum repolist enabled epel | grep -q 'epel'; then
+        #uninstall_package epel-release || true
+        return
+    fi
+
+    cat <<EOF | sudo tee /etc/yum.repos.d/epel-bootstrap.repo
+[epel-bootstrap]
+name=Bootstrap EPEL
+mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=epel-7&arch=\$basearch
+failovermethod=priority
+enabled=0
+gpgcheck=0
+EOF
+
+    sudo yum-config-manager --enable epel-bootstrap
+    yum_install epel-release || \
+        die $LINENO "Error installing EPEL repo, cannot continue"
+    sudo rm -f /etc/yum.repos.d/epel-bootstrap.repo
+}
+
+function install_rdo {
+    if ! is_package_installed rdo-release ; then
+        yum_install https://rdoproject.org/repos/rdo-release.rpm
+    fi
+
+    sudo yum-config-manager --enable rhel-7-server-optional-rpms
+
+}
+
+function is_service_enabled {
+    local xtrace
+    xtrace=$(set +o | grep xtrace)
+    set +o xtrace
+
+    local enabled=1
+    local services=$@
+    local service
+    for service in ${services}; do
+        [[ ,${ENABLED_SERVICES}, =~ ,${service}, ]] && enabled=0
+
+        if type is_${service}_enabled >/dev/null 2>&1; then
+            is_${service}_enabled && enabled=0
+        fi
+
+        [[ ${service} == mariadb && ,${ENABLED_SERVICES} =~ ,"mariadb" ]] && enabled=0
+        [[ ${service} == rabbitmq-server && ,${ENABLED_SERVICES} =~ ,"rabbitmq-server" ]] && enabled=0
+        [[ ${service} == "memcached" && ,${ENABLED_SERVICES} =~ ,"memcached" ]] && enabled=0
+        [[ ${service} == "etcd" && ,${ENABLED_SERVICES} =~ ,"etcd" ]] && enabled=0
+        [[ ${service} == "httpd" && ,${ENABLED_SERVICES} =~ ,"httpd" ]] && enabled=0
+        [[ ${service} == "python-openstackclient" && ,${ENABLED_SERVICES} =~ ,"python-openstackclient" ]] && enabled=0
+        [[ ${service} == "keystone" && ,${ENABLED_SERVICES} =~ ,"keystone" ]] && enabled=0
+        [[ ${service} == "glance" && ,${ENABLED_SERVICES} =~ ,"glance" ]] && enabled=0
+        [[ ${service} == "nova-api" && ,${ENABLED_SERVICES} =~ ,"nova-api" ]] && enabled=0
+        [[ ${service} == "nova-conductor" && ,${ENABLED_SERVICES} =~ ,"nova-conductor" ]] && enabled=0
+        [[ ${service} == "nova-scheduler" && ,${ENABLED_SERVICES} =~ ,"nova-scheduler" ]] && enabled=0
+        [[ ${service} == "nova-metadata-api" && ,${ENABLED_SERVICES} =~ ,"nova-metadata-api" ]] && enabled=0
+        [[ ${service} == "nova-compute" && ,${ENABLED_SERVICES} =~ ,"nova-compute" ]] && enabled=0
+        [[ ${service} == "nova-spice" && ,${ENABLED_SERVICES} =~ ,"nova-spice" ]] && enabled=0
+        [[ ${service} == "neutron-server" && ,${ENABLED_SERVICES} =~ ,"neutron-server" ]] && enabled=0
+        [[ ${service} == "neutron-dhcp-agent" && ,${ENABLED_SERVICES} =~ ,"neutron-dhcp-agent" ]] && enabled=0
+        [[ ${service} == "neutron-metadata-agent" && ,${ENABLED_SERVICES} =~ ,"neutron-metadata-agent" ]] && enabled=0
+        [[ ${service} == "neutron-l3" && ,${ENABLED_SERVICES} =~ ,"neutron-l3" ]] && enabled=0
+    done
+
+    $xtrace
+    return $enabled
+}
+
+function enable_service {
+    local xtrace
+    xtrace=$(set +o | grep xtrace)
+    set +o xtrace
+
+    local tmpsvcs="${ENABLED_SERVICES}"
+    local service
+    for service in $@; do
+        if [[ ,${DISABLED_SERVICES}, =~ ,${service}, ]]; then
+            warn $LINENO "Attempt to enable_service ${service} when it has been disabled"
+            continue
+        fi
+        if ! is_service_enabled $service; then
+            tmpsvcs+=",$service"
+        fi
+    done
+    ENABLED_SERVICES=$(_cleanup_service_list "$tmpsvcs")
+    disable_negated_services
+
+    $xtrace
+}
+
+function disable_service {
+    local xtrace
+    xtrace=$(set +o | grep xtrace)
+    set +o xtrace
+
+    local disabled_svcs="${DISABLED_SERVICES}"
+    local enabled_svcs=",${ENABLED_SERVICES},"
+    local service
+    for service in $@; do
+        disabled_svcs+=",$service"
+        if is_service_enabled $service; then
+            enabled_svcs=${enabled_svcs//,$service,/,}
+        fi
+    done
+    DISABLED_SERVICES=$(_cleanup_service_list "$disabled_svcs")
+    ENABLED_SERVICES=$(_cleanup_service_list "$enabled_svcs")
+
+    $xtrace
+}
+
+function disable_negated_services {
+    local xtrace
+    xtrace=$(set +o | grep xtrace)
+    set +o xtrace
+
+    local to_remove=""
+    local remaining=""
+    local service
+
+    # build up list of services that should be removed; i.e. they
+    # begin with "-"
+    for service in ${ENABLED_SERVICES//,/ }; do
+        if [[ ${service} == -* ]]; then
+            to_remove+=",${service#-}"
+        else
+            remaining+=",${service}"
+        fi
+    done
+
+    # go through the service list.  if this service appears in the "to
+    # be removed" list, drop it
+    ENABLED_SERVICES=$(remove_disabled_services "$remaining" "$to_remove")
+
+    $xtrace
+}
+
+function is_user_exist {
+    local user=$@
+    local userinfo=`cat /etc/passwd | grep $user`
+    if [ -z "$userinfo" ]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
+function is_pip_installed {
+    local pipinfo=`pip list |grep $@`
+    if [ -z "$pipinfo" ]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
+# Wait for an HTTP server to start answering requests
+# wait_for_service timeout url
+#
+# If the service we want is behind a proxy, the proxy may be available
+# before the service. Compliant proxies will return a 503 in this case
+# Loop until we get something else.
+# Also check for the case where there is no proxy and the service just
+# hasn't started yet. curl returns 7 for Failed to connect to host.
+function wait_for_service {
+    local timeout=$1
+    local url=$2
+    local rval=0
+    time_start "wait_for_service"
+    timeout $timeout bash -x <<EOF || rval=$?
+        while [[ \$( ${CURL_GET} -k --noproxy '*' -s -o /dev/null -w '%{http_code}' ${url} ) == 503 || \$? -eq 7 ]]; do
+            sleep 1
+        done
+EOF
+    time_stop "wait_for_service"
+    return $rval
+}
+
+function add_nologin_user {
+    if is_user_exist $@; then
+        return
+    fi
+    sudo adduser -s /sbin/nologin $@
+}
+

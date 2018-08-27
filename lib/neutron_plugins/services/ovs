@@ -1,0 +1,29 @@
+#!/bin/bash
+
+function install_ovs {
+
+    if _is_ovs_installed; then
+        echo "ovs has been installed, so skip it."
+        return
+    fi
+    
+    yum -y install autoconf automake libtool
+    local dest=$DEST_BASE/src/ovs
+    git clone -b branch-2.7 https://github.com/openvswitch/ovs.git $dest
+    cd $dest
+    ./boot.sh
+    ./configure
+    make
+    make install
+    export PATH=$PATH:/usr/local/share/openvswitch/scripts
+    ovs-vsctl set-manager ptcp:6640
+    ovs-ctl start
+}
+
+function _is_ovs_installed {
+    if type ovs-ctl >/dev/null 2>&1; then 
+        return 0
+    else
+        return 1
+    fi
+}
