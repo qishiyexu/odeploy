@@ -16,9 +16,9 @@ FILES=$TOP_DIR/files
 
 LOCALRC = $1
 
-if [ ! -d $LOCALRC ]; then
+if [ ! -n $LOCALRC ]; then
     echo "missing localrc."
-    exit
+    exit 1
 fi
 source $1
 
