@@ -107,6 +107,7 @@ function is_service_enabled {
         [[ ${service} == "python-openstackclient" && ,${ENABLED_SERVICES} =~ ,"python-openstackclient" ]] && enabled=0
         [[ ${service} == "keystone" && ,${ENABLED_SERVICES} =~ ,"keystone" ]] && enabled=0
         [[ ${service} == "glance" && ,${ENABLED_SERVICES} =~ ,"glance" ]] && enabled=0
+        [[ ${service} == "nova" && ,${ENABLED_SERVICES} =~ ,"nova" ]] && enabled=0
         [[ ${service} == "nova-api" && ,${ENABLED_SERVICES} =~ ,"nova-api" ]] && enabled=0
         [[ ${service} == "nova-conductor" && ,${ENABLED_SERVICES} =~ ,"nova-conductor" ]] && enabled=0
         [[ ${service} == "nova-scheduler" && ,${ENABLED_SERVICES} =~ ,"nova-scheduler" ]] && enabled=0
