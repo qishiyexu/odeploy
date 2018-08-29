@@ -18,7 +18,7 @@ HOST_IP=192.168.90.44
 CONTROLLER_IP=$HOST_IP
 
 ENABLED_SERVICES=""
-ENABLED_SERVICES+="nova-spice,nova-compute"
+ENABLED_SERVICES+="nova,nova-spice,nova-compute"
 ENABLED_SERVICES+="neutron-agent,neutron-l3"
 
 
