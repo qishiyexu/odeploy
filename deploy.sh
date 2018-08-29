@@ -210,3 +210,17 @@ if is_service_enabled horizon; then
     start_horizon
 fi
 
+openrc=$DEST_BASE/admin-openrc
+if [[ -f $openrc ]]; then
+    sudo rm -f $openrc
+fi
+cat <<EOF | sudo tee $openrc
+    export OS_PROJECT_DOMAIN_NAME=Default
+    export OS_USER_DOMAIN_NAME=Default
+    export OS_PROJECT_NAME=admin
+    export OS_USERNAME=admin
+    export OS_PASSWORD=$ADMIN_PASSWORD
+    export OS_AUTH_URL=http://controller:5000/v3
+    export OS_IDENTITY_API_VERSION=3
+    export OS_IMAGE_API_VERSION=2
+EOF
