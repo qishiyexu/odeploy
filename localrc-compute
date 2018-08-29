@@ -19,7 +19,7 @@ CONTROLLER_IP=$HOST_IP
 
 ENABLED_SERVICES=""
 ENABLED_SERVICES+="nova,nova-spice,nova-compute"
-ENABLED_SERVICES+="neutron-agent,neutron-l3"
+ENABLED_SERVICES+=",neutron-agent,neutron-l3"
 
 
 ENABLE_DEBUG_LOG_LEVEL=False
