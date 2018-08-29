@@ -342,7 +342,77 @@ EOF
 
 
 
+function add_glance_systemctl {
+    if [[ -f "$GLANCE_API_SYSTEMCTL_FILE" ]]; then
+        sudo rm -f $GLANCE_API_SYSTEMCTL_FILE
+    fi
+    
+        cat <<EOF | sudo tee $GLANCE_API_SYSTEMCTL_FILE
 
+[Unit]
+Description=OpenStack Image Service (code-named Glance) API server
+After=syslog.target network.target
+
+[Service]
+Environment="PYTHONPATH=$DEST_BASE/lib/python2.7/site-packages"
+LimitNOFILE=131072
+LimitNPROC=131072
+Type=simple
+User=glance
+ExecStart=$DEST_BASE/bin/glance-api --config-dir=$DEST_BASE/etc/glance/ --config-file=$DEST_BASE/etc/glance/glance-api.conf
+PrivateTmp=true
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
+EOF
+
+    if [[ -f "$GLANCE_REGISTRY_SYSTEMCTL_FILE" ]]; then
+        sudo rm -f $GLANCE_REGISTRY_SYSTEMCTL_FILE
+    fi
+    
+        cat <<EOF | sudo tee $GLANCE_REGISTRY_SYSTEMCTL_FILE
+[Unit]
+Description=OpenStack Image Service (code-named Glance) Registry server
+After=syslog.target network.target
+
+[Service]
+Environment="PYTHONPATH=$DEST_BASE/lib/python2.7/site-packages"
+Type=simple
+User=glance
+ExecStart=$DEST_BASE/bin/glance-registry --config-dir=$DEST_BASE/etc/glance/ --config-file=$DEST_BASE/etc/glance/glance-registry.conf
+PrivateTmp=true
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
+EOF
+
+    if [[ -f "$GLANCE_SCRUBBER_SYSTEMCTL_FILE" ]]; then
+        sudo rm -f $GLANCE_SCRUBBER_SYSTEMCTL_FILE
+    fi
+    
+        cat <<EOF | sudo tee $GLANCE_SCRUBBER_SYSTEMCTL_FILE
+[Unit]
+Description=OpenStack Image Service deferred image deletion service
+After=syslog.target network.target
+
+[Service]
+Environment="PYTHONPATH=$DEST_BASE/lib/python2.7/site-packages"
+Type=simple
+User=glance
+ExecStart=$DEST_BASE/bin/glance-scrubber --config-dir=$DEST_BASE/etc/glance/ --config-file=$DEST_BASE/etc/glance/glance-scrubber.conf
+PrivateTmp=true
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
+EOF
+
+}
 
 
 

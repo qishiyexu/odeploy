@@ -1,22 +1,5 @@
 #!/bin/bash
-#
-# lib/horizon
-# Functions to control the configuration and operation of the horizon service
 
-# Dependencies:
-#
-# - ``functions`` file
-# - ``apache`` file
-# - ``SERVICE_{TENANT_NAME|PASSWORD}`` must be defined
-
-# ``stack.sh`` calls the entry points in this order:
-#
-# - install_horizon
-# - configure_horizon
-# - init_horizon
-# - start_horizon
-# - stop_horizon
-# - cleanup_horizon
 
 # Save trace setting
 _XTRACE_HORIZON=$(set +o | grep xtrace)
@@ -68,7 +51,7 @@ function configure_horizon {
     # Horizon is installed as develop mode, so we can compile here.
     # Message catalog compilation is handled by Django admin script,
     # so compiling them after the installation avoids Django installation twice.
-    (cd $HORIZON_DIR; $PYTHON manage.py compilemessages)
+    (cd $HORIZON_SRC_DIR; $PYTHON manage.py compilemessages)
 
     # ``local_settings.py`` is used to override horizon default settings.
     local local_settings=$HORIZON_DIR/openstack_dashboard/local/local_settings.py
@@ -112,8 +95,9 @@ function configure_horizon {
         s,%APACHE_NAME%,$APACHE_NAME,g;
         s,%DEST_BASE%,$DEST_BASE,g;
         s,%WEBROOT%,$HORIZON_APACHE_ROOT,g;
-        s,\/openstack_dashboard,\/openstack\/lib\/python2.7\/site-packages\/openstack_dashboard,g;
     \" $FILES/apache-horizon.template >$horizon_conf"
+    
+    cp $HORIZON_DIR/local/local_settings.py.example $HORIZON_DIR/local/local_settings.py
 
     enable_apache_site horizon
 }

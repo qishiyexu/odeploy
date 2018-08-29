@@ -266,7 +266,8 @@ PUBLIC_NETWORK_NAME=${PUBLIC_NETWORK_NAME:-"public"}
 
 ## ------------------ horizon default config ------------------
 HORIZON_SRC_DIR=$DEST_BASE/src/horizon
-HORIZON_DIR=$PYTHONPATH
+#HORIZON_DIR=$PYTHONPATH/openstack_dashboard
+HORIZON_DIR=$HORIZON_SRC_DIR/openstack_dashboard
 HORIZON_SETTINGS=${HORIZON_SETTINGS:-$HORIZON_DIR/openstack_dashboard/local/local_settings.py.example}
 HORIZON_APACHE_ROOT="/dashboard"
 

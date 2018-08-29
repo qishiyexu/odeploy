@@ -1,24 +1,5 @@
 #!/bin/bash
-#
-# lib/glance
-# Functions to control the configuration and operation of the **Glance** service
 
-# Dependencies:
-#
-# - ``functions`` file
-# - ``DEST``, ``DATA_DIR``, ``STACK_USER`` must be defined
-# - ``SERVICE_{TENANT_NAME|PASSWORD}`` must be defined
-# - ``SERVICE_HOST``
-# - ``KEYSTONE_TOKEN_FORMAT`` must be defined
-
-# ``stack.sh`` calls the entry points in this order:
-#
-# - install_glance
-# - configure_glance
-# - init_glance
-# - start_glance
-# - stop_glance
-# - cleanup_glance
 
 # Save trace setting
 _XTRACE_GLANCE=$(set +o | grep xtrace)
@@ -67,8 +48,8 @@ function install_glance {
 
 # configure_glance() - Set config files, create data dirs, etc
 function configure_glance {
-    sudo install -d -o glance $GLANCE_CONF_DIR $GLANCE_METADEF_DIR
-    sudo install -d -o glance $GLANCE_DATA_DIR
+    sudo install -d -o glance -g glance $GLANCE_CONF_DIR $GLANCE_METADEF_DIR
+    sudo install -d -o glance -g glance $GLANCE_DATA_DIR
 
     # We run this here as this configures cache dirs for the auth middleware
     # which is used in the api server and not in the registry. The api
@@ -116,7 +97,7 @@ function configure_glance {
 
     # Store specific configs
     iniset $GLANCE_API_CONF glance_store filesystem_store_datadir $GLANCE_IMAGE_DIR/
-    iniset $GLANCE_API_CONF DEFAULT registry_host $GLANCE_SERVICE_HOST
+   # iniset $GLANCE_API_CONF DEFAULT registry_host $GLANCE_SERVICE_HOST
 
     # CORS feature support - to allow calls from Horizon by default
     if [ -n "$GLANCE_CORS_ALLOWED_ORIGIN" ]; then
@@ -160,12 +141,12 @@ function configure_glance {
     # discovery document will be correct
     iniset $GLANCE_API_CONF DEFAULT public_endpoint $GLANCE_URL
 
-    iniset $GLANCE_API_CONF DEFAULT bind_port $GLANCE_SERVICE_PORT_INT
-    iniset $GLANCE_REGISTRY_CONF DEFAULT bind_port $GLANCE_REGISTRY_PORT_INT
+    iniset $GLANCE_API_CONF DEFAULT bind_port $GLANCE_SERVICE_PORT
+    iniset $GLANCE_REGISTRY_CONF DEFAULT bind_port $GLANCE_REGISTRY_PORT
 
-    iniset $GLANCE_API_CONF keystone_authtoken identity_uri $KEYSTONE_AUTH_URI
-    iniset $GLANCE_API_CONF keystone_authtoken identity_url $KEYSTONE_AUTH_URI
-    iniset $GLANCE_API_CONF keystone_authtoken memcached_servers CONTROLLER_IP:11211
+    iniset $GLANCE_API_CONF keystone_authtoken auth_uri $KEYSTONE_AUTH_URI
+    iniset $GLANCE_API_CONF keystone_authtoken auth_url $KEYSTONE_AUTH_URI
+    iniset $GLANCE_API_CONF keystone_authtoken memcached_servers $CONTROLLER_IP:11211
     iniset $GLANCE_API_CONF keystone_authtoken auth_type password
     iniset $GLANCE_API_CONF keystone_authtoken project_domain_name $SERVICE_DOMAIN_NAME
     iniset $GLANCE_API_CONF keystone_authtoken user_domain_name $SERVICE_DOMAIN_NAME
@@ -173,9 +154,9 @@ function configure_glance {
     iniset $GLANCE_API_CONF keystone_authtoken username glance
     iniset $GLANCE_API_CONF keystone_authtoken password $SERVICE_PASSWORD
     
-    iniset $GLANCE_REGISTRY_CONF keystone_authtoken identity_uri $KEYSTONE_AUTH_URI
-    iniset $GLANCE_REGISTRY_CONF keystone_authtoken identity_url $KEYSTONE_AUTH_URI
-    iniset $GLANCE_REGISTRY_CONF keystone_authtoken memcached_servers CONTROLLER_IP:11211
+    iniset $GLANCE_REGISTRY_CONF keystone_authtoken auth_uri $KEYSTONE_AUTH_URI
+    iniset $GLANCE_REGISTRY_CONF keystone_authtoken auth_url $KEYSTONE_AUTH_URI
+    iniset $GLANCE_REGISTRY_CONF keystone_authtoken memcached_servers $CONTROLLER_IP:11211
     iniset $GLANCE_REGISTRY_CONF keystone_authtoken auth_type password
     iniset $GLANCE_REGISTRY_CONF keystone_authtoken project_domain_name $SERVICE_DOMAIN_NAME
     iniset $GLANCE_REGISTRY_CONF keystone_authtoken user_domain_name $SERVICE_DOMAIN_NAME
@@ -297,77 +278,7 @@ function init_glance {
     $GLANCE_BIN_DIR/glance-manage --config-file $GLANCE_CONF_DIR/glance-api.conf db_load_metadefs
 }
 
-function add_glance_systemctl {
-    if [[ -f "$GLANCE_API_SYSTEMCTL_FILE" ]]; then
-        sudo rm -f $GLANCE_API_SYSTEMCTL_FILE
-    fi
-    
-        cat <<EOF | sudo tee $GLANCE_API_SYSTEMCTL_FILE
 
-[Unit]
-Description=OpenStack Image Service (code-named Glance) API server
-After=syslog.target network.target
-
-[Service]
-Environment="PYTHONPATH=$DEST_BASE/lib/python2.7/site-packages"
-LimitNOFILE=131072
-LimitNPROC=131072
-Type=simple
-User=glance
-ExecStart=$DEST_BASE/bin/glance-api --config-dir=$DEST_BASE/etc/glance/
-PrivateTmp=true
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
-
-EOF
-
-    if [[ -f "$GLANCE_REGISTRY_SYSTEMCTL_FILE" ]]; then
-        sudo rm -f $GLANCE_REGISTRY_SYSTEMCTL_FILE
-    fi
-    
-        cat <<EOF | sudo tee $GLANCE_REGISTRY_SYSTEMCTL_FILE
-[Unit]
-Description=OpenStack Image Service (code-named Glance) Registry server
-After=syslog.target network.target
-
-[Service]
-Environment="PYTHONPATH=$DEST_BASE/lib/python2.7/site-packages"
-Type=simple
-User=glance
-ExecStart=$DEST_BASE/bin/glance-registry --config-dir=$DEST_BASE/etc/glance/
-PrivateTmp=true
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
-
-EOF
-
-    if [[ -f "$GLANCE_SCRUBBER_SYSTEMCTL_FILE" ]]; then
-        sudo rm -f $GLANCE_SCRUBBER_SYSTEMCTL_FILE
-    fi
-    
-        cat <<EOF | sudo tee $GLANCE_SCRUBBER_SYSTEMCTL_FILE
-[Unit]
-Description=OpenStack Image Service deferred image deletion service
-After=syslog.target network.target
-
-[Service]
-Environment="PYTHONPATH=$DEST_BASE/lib/python2.7/site-packages"
-Type=simple
-User=glance
-ExecStart=$DEST_BASE/bin/glance-scrubber --config-dir=$DEST_BASE/etc/glance/
-PrivateTmp=true
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
-
-EOF
-
-}
 
 function enable_glance_systemctl {
     $SYSTEMCTL enable openstack-glance-api.service
