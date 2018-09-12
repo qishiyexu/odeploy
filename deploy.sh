@@ -212,6 +212,7 @@ if is_service_enabled horizon; then
 fi
 
 if is_service_enabled libvirt; then
+    install_libvirt
 fi
 
 openrc=$DEST_BASE/admin-openrc

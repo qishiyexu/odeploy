@@ -1,7 +1,11 @@
 #!/bin/bash
 
 function install_libvirt {
-    git clone $LIBVIRT_REPO $LIBVIRT_SRC_DIR
+    if [ ! -d "$LIBVIRT_SRC_DIR" ]; then
+        git clone $LIBVIRT_REPO $LIBVIRT_SRC_DIR
+    fi
     
-    git clone $QEMU_REPO $QEMU_SRC_DIR
+    if [ ! -d "$QEMU_SRC_DIR" ]; then
+        git clone $QEMU_REPO $QEMU_SRC_DIR
+    fi
 }
