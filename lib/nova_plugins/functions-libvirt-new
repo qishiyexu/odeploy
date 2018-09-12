@@ -1,0 +1,7 @@
+#!/bin/bash
+
+function install_libvirt {
+    git clone $LIBVIRT_REPO $LIBVIRT_SRC_DIR
+    
+    git clone $QEMU_REPO $QEMU_SRC_DIR
+}

@@ -27,3 +27,16 @@ function _is_ovs_installed {
         return 1
     fi
 }
+
+function configure_ovs {
+    install -d -o neutron -g neutron $DEST_BASE/etc/neutron/plugins/openvswitch/
+    iniset $OVS_AGENT_CONFIG_FILE ovs tunnel_bridge  "br-tun"
+    iniset $OVS_AGENT_CONFIG_FILE ovs local_ip  $HOST_IP
+    iniset $OVS_AGENT_CONFIG_FILE ovs integration_bridge  "br-int"
+
+    iniset $OVS_AGENT_CONFIG_FILE agent l2_population   "True"
+    
+    iniset $OVS_AGENT_CONFIG_FILE securitygroup firewall_driver   "neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver"
+    iniset $OVS_AGENT_CONFIG_FILE securitygroup enable_security_group   "True"
+    
+}

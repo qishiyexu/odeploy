@@ -6,20 +6,25 @@ SERVICE_PASSWORD=123456
 SERVICE_TOKEN=123456
 RABBIT_PASSWORD=123456
 
-KEYSTONE_REPO=http://10.142.233.181:8888/ctg-cache/keystone.git
-GLANCE_REPO=http://10.142.233.181:8888/ctg-cache/glance.git
-NOVA_REPO=http://10.142.233.181:8888/ctg-cache/nova.git
-NEUTRON_REPO=http://10.142.233.181:8888/ctg-cache/neutron.git
-HORIZON_REPO=http://10.142.233.181:8888/ctg-cache/horizon.git
+GIT_ACCOUNT=
+GIT_PASSWD=
+
+KEYSTONE_REPO=http://$GIT_ACCOUNT:$GIT_PASSWD@10.142.233.181:8888/ctg-cache/keystone.git
+GLANCE_REPO=http://$GIT_ACCOUNT:$GIT_PASSWD@10.142.233.181:8888/ctg-cache/glance.git
+NOVA_REPO=http://$GIT_ACCOUNT:$GIT_PASSWD@10.142.233.181:8888/ctg-cache/nova.git
+NEUTRON_REPO=http://$GIT_ACCOUNT:$GIT_PASSWD@10.142.233.181:8888/ctg-cache/neutron.git
+HORIZON_REPO=http://$GIT_ACCOUNT:$GIT_PASSWD@10.142.233.181:8888/ctg-cache/horizon.git
+LIBVIRT_REPO=http://$GIT_ACCOUNT:$GIT_PASSWD@10.142.233.181:8888/chenzhao/libvirt.git
+QEMU_REPO=http://$GIT_ACCOUNT:$GIT_PASSWD@10.142.233.181:8888/ctg-cache/qemu.git
 
 DEST_BASE=/openstack
 
 HOST_IP=192.168.90.44
-CONTROLLER_IP=$HOST_IP
+CONTROLLER_IP=192.168.90.43
 
 ENABLED_SERVICES=""
 ENABLED_SERVICES+="nova,nova-spice,nova-compute"
-ENABLED_SERVICES+=",neutron-agent,neutron-l3"
+ENABLED_SERVICES+=",neutron-agent,neutron-l3,libvirt"
 
 
 ENABLE_DEBUG_LOG_LEVEL=False

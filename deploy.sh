@@ -39,6 +39,7 @@ source $TOP_DIR/lib/neutron
 source $TOP_DIR/lib/horizon
 source $TOP_DIR/inc/ini-config
 source $TOP_DIR/lib/neutron_plugins/services/ovs
+source $TOP_DIR/lib/nova_plugins/functions-libvirt-new
 
 ENABLE_DEBUG_LOG_LEVEL=$(trueorfalse True ENABLE_DEBUG_LOG_LEVEL)
 SYSTEMD_DIR=/etc/systemd/system/
@@ -208,6 +209,9 @@ if is_service_enabled horizon; then
     configure_horizon
     init_horizon
     start_horizon
+fi
+
+if is_service_enabled libvirt; then
 fi
 
 openrc=$DEST_BASE/admin-openrc

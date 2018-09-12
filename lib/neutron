@@ -46,6 +46,7 @@ function install_neutron {
     
     if [[ $NEUTRON_AGENT == "openvswitch" ]]; then
         install_ovs
+        configure_ovs
     fi
     
 }
@@ -269,6 +270,18 @@ function configure_neutron_new {
         cp $NEUTRON_SRC_DIR/etc/metering_agent.ini.sample $NEUTRON_METERING_AGENT_CONF
         neutron_service_plugin_class_add metering
     fi
+    
+    if is_service_enabled nova-compute; then
+        iniset $NOVA_CPU_CONF neutron url http://controller:9696
+        iniset $NOVA_CPU_CONF neutron auth_url http://controller:35357
+        iniset $NOVA_CPU_CONF neutron auth_type password
+        iniset $NOVA_CPU_CONF neutron project_domain_name default
+        iniset $NOVA_CPU_CONF neutron user_domain_name default
+        iniset $NOVA_CPU_CONF neutron region_name RegionOne
+        iniset $NOVA_CPU_CONF neutron project_name service
+        iniset $NOVA_CPU_CONF neutron username neutron
+        iniset $NOVA_CPU_CONF neutron password 123456
+    fi
 }
 
 function init_neutron_new {
@@ -315,6 +328,9 @@ function configure_neutron_nova_new {
     iniset $NOVA_CONF neutron project_domain_name "Default"
     iniset $NOVA_CONF neutron auth_strategy $NEUTRON_AUTH_STRATEGY
     iniset $NOVA_CONF neutron region_name "$REGION_NAME"
+    iniset $NOVA_CONF neutron service_metadata_proxy True
+    iniset $NOVA_CONF neutron metadata_proxy_shared_secret "123456"
+    iniset $NOVA_CONF neutron url "$SERVICE_PROTOCOL://$CONTROLLER_IP:$NEUTRON_SERVICE_PORT"
 
     iniset $NOVA_CONF DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
 

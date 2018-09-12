@@ -118,6 +118,7 @@ function is_service_enabled {
         [[ ${service} == "neutron-dhcp-agent" && ,${ENABLED_SERVICES} =~ ,"neutron-dhcp-agent" ]] && enabled=0
         [[ ${service} == "neutron-metadata-agent" && ,${ENABLED_SERVICES} =~ ,"neutron-metadata-agent" ]] && enabled=0
         [[ ${service} == "neutron-l3" && ,${ENABLED_SERVICES} =~ ,"neutron-l3" ]] && enabled=0
+        [[ ${service} == "libvirt" && ,${ENABLED_SERVICES} =~ ,"libvirt" ]] && enabled=0
     done
 
     $xtrace

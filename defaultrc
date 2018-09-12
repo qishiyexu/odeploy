@@ -248,6 +248,7 @@ NEUTRON_ROOTWRAP=$BIN_DIR/neutron-rootwrap
 NEUTRON_ROOTWRAP_CONF_FILE=$NEUTRON_CONF_DIR/rootwrap.conf
 NEUTRON_ROOTWRAP_CMD="$NEUTRON_ROOTWRAP $NEUTRON_ROOTWRAP_CONF_FILE"
 NEUTRON_ROOTWRAP_DAEMON_CMD="$NEUTRON_ROOTWRAP-daemon $NEUTRON_ROOTWRAP_CONF_FILE"
+OVS_AGENT_CONFIG_FILE=ovs_neutron_plugin.ini
 
 # This is needed because _neutron_ovs_base_configure_l3_agent will set
 # external_network_bridge
@@ -271,7 +272,19 @@ HORIZON_DIR=$HORIZON_SRC_DIR/openstack_dashboard
 HORIZON_SETTINGS=${HORIZON_SETTINGS:-$HORIZON_DIR/openstack_dashboard/local/local_settings.py.example}
 HORIZON_APACHE_ROOT="/dashboard"
 
+## ------------------ libvirt ------------------
+LIBVIRT_SRC_DIR=$DEST_BASE/src/libvirt
+QEMU_SRC_DIR=$DEST_BASE/src/qemu
 
+
+## ------------------ REPO ------------------
+KEYSTONE_REPO=http://10.142.233.181:8888/ctg-cache/keystone.git
+GLANCE_REPO=http://10.142.233.181:8888/ctg-cache/glance.git
+NOVA_REPO=http://10.142.233.181:8888/ctg-cache/nova.git
+NEUTRON_REPO=http://10.142.233.181:8888/ctg-cache/neutron.git
+HORIZON_REPO=http://10.142.233.181:8888/ctg-cache/horizon.git
+LIBVIRT_REPO=http://10.142.233.181:8888/chenzhao/libvirt.git
+QEMU_REPO=http://10.142.233.181:8888/ctg-cache/qemu.git
 
 
 
