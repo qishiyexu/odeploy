@@ -132,6 +132,7 @@ function configure_neutron_new {
     iniset $NEUTRON_CONF database connection "mysql+pymysql://neutron:$DATABASE_PASSWORD@controller/neutron"
     iniset $NEUTRON_CONF DEFAULT state_path $NEUTRON_STATE_PATH
     iniset $NEUTRON_CONF oslo_concurrency lock_path $NEUTRON_STATE_PATH/lock
+    iniset $NEUTRON_CONF DEFAULT transport_url rabbit://openstack:$RABBIT_PASSWORD@controller
 
     iniset $NEUTRON_CONF DEFAULT debug $ENABLE_DEBUG_LOG_LEVEL
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -o xtrace
+#set -o xtrace
 
 unset GREP_OPTIONS
 
@@ -211,9 +211,6 @@ if is_service_enabled horizon; then
     start_horizon
 fi
 
-if is_service_enabled libvirt; then
-    install_libvirt
-fi
 
 openrc=$DEST_BASE/admin-openrc
 if [[ -f $openrc ]]; then

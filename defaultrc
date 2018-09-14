@@ -127,9 +127,10 @@ GLANCE_LOG_DIR=${GLANCE_LOG_DIR:-/var/log/glance}
 GLANCE_API_LOG_FILE=$GLANCE_LOG_DIR/glance-api.log
 GLANCE_REGISTRY_LOG_FILE=$GLANCE_LOG_DIR/glance-registry.log
 
-GLANCE_API_SYSTEMCTL_FILE=/etc/systemd/system/openstack-glance-api.service 
-GLANCE_REGISTRY_SYSTEMCTL_FILE=/etc/systemd/system/openstack-glance-registry.service 
-GLANCE_SCRUBBER_SYSTEMCTL_FILE=/etc/systemd/system/openstack-glance-scrubber.service 
+SYSTEMCTL_PATH=/usr/lib/systemd/system
+GLANCE_API_SYSTEMCTL_FILE=$SYSTEMCTL_PATH/openstack-glance-api.service 
+GLANCE_REGISTRY_SYSTEMCTL_FILE=$SYSTEMCTL_PATH/openstack-glance-registry.service 
+GLANCE_SCRUBBER_SYSTEMCTL_FILE=$SYSTEMCTL_PATH/openstack-glance-scrubber.service 
 
 
 

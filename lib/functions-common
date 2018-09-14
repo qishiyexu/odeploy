@@ -1,35 +1,5 @@
 #!/bin/bash
-#
-# functions-common - Common functions used by DevStack components
-#
-# The canonical copy of this file is maintained in the DevStack repo.
-# All modifications should be made there and then sync'ed to other repos
-# as required.
-#
-# This file is sorted alphabetically within the function groups.
-#
-# - Config Functions
-# - Control Functions
-# - Distro Functions
-# - Git Functions
-# - OpenStack Functions
-# - Package Functions
-# - Process Functions
-# - Service Functions
-# - System Functions
-#
-# The following variables are assumed to be defined by certain functions:
-#
-# - ``ENABLED_SERVICES``
-# - ``ERROR_ON_CLONE``
-# - ``FILES``
-# - ``OFFLINE``
-# - ``RECLONE``
-# - ``REQUIREMENTS_DIR``
-# - ``STACK_USER``
-# - ``TRACK_DEPENDS``
-# - ``http_proxy``, ``https_proxy``, ``no_proxy``
-#
+
 
 # Save trace setting
 _XTRACE_FUNCTIONS_COMMON=$(set +o | grep xtrace)

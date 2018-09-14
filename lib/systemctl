@@ -1,7 +1,9 @@
 #!/bin/bash
 
+
+
 function add_nova_api_systemctl {
-    cat <<EOF | sudo tee /etc/systemd/system/openstack-nova-api.service
+    cat <<EOF | sudo tee $SYSTEMCTL_PATH/openstack-nova-api.service
 [Unit]
 Description=OpenStack Nova API Server
 After=syslog.target network.target
@@ -22,7 +24,7 @@ EOF
 }
 
 function add_nova_conductor_systemctl {
-    cat <<EOF | sudo tee /etc/systemd/system/openstack-nova-conductor.service
+    cat <<EOF | sudo tee $SYSTEMCTL_PATH/openstack-nova-conductor.service
 
 [Unit]
 Description=OpenStack Nova Conductor Server
@@ -46,7 +48,7 @@ EOF
 
 
 function add_nova_metadata_api_systemctl {
-    cat <<EOF | sudo tee /etc/systemd/system/openstack-nova-metadata-api.service
+    cat <<EOF | sudo tee $SYSTEMCTL_PATH/openstack-nova-metadata-api.service
 
 [Unit]
 Description=OpenStack Nova Metadata API Server
@@ -70,7 +72,7 @@ EOF
 }
 
 function add_nova_scheduler_systemctl {
-    cat <<EOF | sudo tee /etc/systemd/system/openstack-nova-scheduler.service
+    cat <<EOF | sudo tee $SYSTEMCTL_PATH/openstack-nova-scheduler.service
 [Unit]
 Description=OpenStack Nova Scheduler Server
 After=syslog.target network.target
@@ -91,7 +93,7 @@ EOF
 }
 
 function add_nova_compute_systemctl {
-    cat <<EOF | sudo tee /etc/systemd/system/openstack-nova-compute.service
+    cat <<EOF | sudo tee $SYSTEMCTL_PATH/openstack-nova-compute.service
 [Unit]
 Description=OpenStack Nova Compute Server
 After=syslog.target network.target libvirtd.service
@@ -113,7 +115,7 @@ EOF
 }
 
 function add_nova_consoleauth_systemctl {
-    cat <<EOF | sudo tee /etc/systemd/system/openstack-nova-consoleauth.service
+    cat <<EOF | sudo tee $SYSTEMCTL_PATH/openstack-nova-consoleauth.service
 [Unit]
 Description=OpenStack Nova VNC console auth Server
 After=syslog.target network.target
@@ -136,7 +138,7 @@ EOF
 
 
 function add-neutron-dhcp-agent-systemctl {
-    cat <<EOF | sudo tee /etc/systemd/system/neutron-dhcp-agent.service
+    cat <<EOF | sudo tee $SYSTEMCTL_PATH/neutron-dhcp-agent.service
 [Unit]
 Description=OpenStack Neutron DHCP Agent
 After=syslog.target network.target
@@ -159,7 +161,7 @@ EOF
 
 
 function add-neutron-linuxbridge-agent-systemctl {
-    cat <<EOF | sudo tee /etc/systemd/system/neutron-linuxbridge-agent.service
+    cat <<EOF | sudo tee $SYSTEMCTL_PATH/neutron-linuxbridge-agent.service
 [Unit]
 Description=OpenStack Neutron Linux Bridge Agent
 After=syslog.target network.target
@@ -183,7 +185,7 @@ EOF
 }
 
 function add-neutron-openvswitch-agent-systemctl {
-    cat <<EOF | sudo tee /etc/systemd/system/neutron-openvswitch-agent.service
+    cat <<EOF | sudo tee $SYSTEMCTL_PATH/neutron-openvswitch-agent.service
 [Unit]
 Description=OpenStack Neutron Open vSwitch Agent
 After=syslog.target network.target
@@ -203,7 +205,7 @@ EOF
 }
 
 function add-neutron-metadata-agent-systemctl {
-    cat <<EOF | sudo tee /etc/systemd/system/neutron-metadata-agent.service
+    cat <<EOF | sudo tee $SYSTEMCTL_PATH/neutron-metadata-agent.service
 [Unit]
 Description=OpenStack Neutron Metadata Agent
 After=syslog.target network.target
@@ -224,7 +226,7 @@ EOF
 }
 
 function add-neutron-l3-agent-systemctl {
-    cat <<EOF | sudo tee /etc/systemd/system/neutron-l3-agent.service
+    cat <<EOF | sudo tee $SYSTEMCTL_PATH/neutron-l3-agent.service
 [Unit]
 Description=OpenStack Neutron Layer 3 Agent
 After=syslog.target network.target
@@ -246,7 +248,7 @@ EOF
 }
 
 function add_neutron_server_systemctl {
-    cat <<EOF | sudo tee /etc/systemd/system/neutron-server.service
+    cat <<EOF | sudo tee $SYSTEMCTL_PATH/neutron-server.service
 [Unit]
 Description=OpenStack Neutron Server
 After=syslog.target network.target
@@ -270,7 +272,7 @@ EOF
 }
 
 function add_neutron_linuxbridge_cleanup_systemctl {
-    cat <<EOF | sudo tee /etc/systemd/system/neutron-linuxbridge-cleanup.service
+    cat <<EOF | sudo tee $SYSTEMCTL_PATH/neutron-linuxbridge-cleanup.service
 [Unit]
 Description=OpenStack Neutron Linux Bridge Cleanup Utility
 After=syslog.target network.target
@@ -293,7 +295,7 @@ EOF
 }
 
 function add_neutron_netns_cleanup_systemctl {
-    cat <<EOF | sudo tee /etc/systemd/system/neutron-netns-cleanup.service
+    cat <<EOF | sudo tee $SYSTEMCTL_PATH/neutron-netns-cleanup.service
 [Unit]
 Description=OpenStack Neutron Netns Cleanup Utility
 After=syslog.target network.target openvswitch.service
@@ -317,7 +319,7 @@ EOF
 
 
 function add_neutron_ovs_cleanup_systemctl {
-    cat <<EOF | sudo tee /etc/systemd/system/neutron-ovs-cleanup.service
+    cat <<EOF | sudo tee $SYSTEMCTL_PATH/neutron-ovs-cleanup.service
 [Unit]
 Description=OpenStack Neutron Open vSwitch Cleanup Utility
 After=syslog.target network.target openvswitch.service
