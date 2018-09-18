@@ -46,6 +46,12 @@ SYSTEMD_DIR=/etc/systemd/system/
 SYSTEMCTL=systemctl
 SERVICE_TIMEOUT=${SERVICE_TIMEOUT:-60}
 
+DEPLOYLOG=$TOP_DIR/deploylog
+function add_log {
+    echo $0 >> $DEPLOYLOG
+    echo '\n' >> $DEPLOYLOG
+}
+
 disable_firewalld
 disable_selinux
 
@@ -174,6 +180,7 @@ if is_service_enabled glance; then
 fi
 
 if is_service_enabled nova-compute; then
+    add_log "installing nova compute ..."
     yum_install_if_not_exist qemu-kvm qemu-img virt-manager libvirt libvirt-python libvirt-client virt-install virt-viewer bridge-utils
     systemctl enable libvirtd.servic
     systemctl restart libvirtd.service

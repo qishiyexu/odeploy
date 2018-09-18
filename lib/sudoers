@@ -4,7 +4,7 @@ function add_nova_sudoer {
     cat <<EOF | sudo tee /etc/sudoers.d/nova
 Defaults:nova !requiretty
 
-secure_path+=":/openstack/bin"
+Defaults    secure_path = /openstack/bin:/sbin:/bin:/usr/sbin:/usr/bin
     
 nova ALL = (root) NOPASSWD: $BIN_DIR/nova-rootwrap $NOVA_CONF_DIR/rootwrap.conf *
 nova ALL = (root) NOPASSWD: /usr/bin/privsep-helper *
@@ -15,7 +15,7 @@ function add_neutron_sudoer {
     cat <<EOF | sudo tee /etc/sudoers.d/neutron
 Defaults:neutron !requiretty
 
-secure_path+=":/openstack/bin"
+Defaults    secure_path = /openstack/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 neutron ALL = (root) NOPASSWD: $BIN_DIR/neutron-rootwrap /openstack/etc/neutron/rootwrap.conf *
 neutron ALL = (root) NOPASSWD: $BIN_DIR/neutron-rootwrap-daemon /openstack/etc/neutron/rootwrap.conf
