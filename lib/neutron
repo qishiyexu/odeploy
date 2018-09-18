@@ -28,12 +28,14 @@ set +o xtrace
 # Functions
 # ---------
 
+function clone_neutron {
+    local force=$1
+    clone_repo $NEUTRON_REPO $NEUTRON_SRC_DIR force   
+}
 
 function install_neutron {
     
-    if [ ! -d "$NEUTRON_SRC_DIR" ]; then
-        git clone $NEUTRON_REPO $NEUTRON_SRC_DIR
-    fi
+    clone_neutron $FORCE_CLONE_REPO
     cd $NEUTRON_SRC_DIR
     pip install -r $NEUTRON_SRC_DIR/requirements.txt
     python setup.py install --prefix=$DEST_BASE
@@ -133,6 +135,7 @@ function configure_neutron_new {
     iniset $NEUTRON_CONF DEFAULT state_path $NEUTRON_STATE_PATH
     iniset $NEUTRON_CONF oslo_concurrency lock_path $NEUTRON_STATE_PATH/lock
     iniset $NEUTRON_CONF DEFAULT transport_url rabbit://openstack:$RABBIT_PASSWORD@controller
+    iniset $NEUTRON_CONF DEFAULT rpc_backend rabbit
 
     iniset $NEUTRON_CONF DEFAULT debug $ENABLE_DEBUG_LOG_LEVEL
 

@@ -10,93 +10,16 @@ set +o xtrace
 declare -r -g _DEVSTACK_FUNCTIONS_COMMON=1
 
 # Global Config Variables
-declare -A -g GITREPO
-declare -A -g GITBRANCH
-declare -A -g GITDIR
+#declare -A -g GITREPO
+#declare -A -g GITBRANCH
+#declare -A -g GITDIR
 
 
 
 TRACK_DEPENDS=${TRACK_DEPENDS:-False}
 KILL_PATH="$(which kill)"
 
-# Save these variables to .stackenv
-STACK_ENV_VARS="BASE_SQL_CONN DATA_DIR DEST ENABLED_SERVICES HOST_IP \
-    KEYSTONE_AUTH_URI KEYSTONE_SERVICE_URI \
-    LOGFILE OS_CACERT SERVICE_HOST STACK_USER TLS_IP \
-    HOST_IPV6 SERVICE_IP_VERSION"
 
-
-# Saves significant environment variables to .stackenv for later use
-# Refers to a lot of globals, only TOP_DIR and STACK_ENV_VARS are required to
-# function, the rest are simply saved and do not cause problems if they are undefined.
-# save_stackenv [tag]
-function save_stackenv {
-    local tag=${1:-""}
-    # Save some values we generated for later use
-    time_stamp=$(date "+$TIMESTAMP_FORMAT")
-    echo "# $time_stamp $tag" >$TOP_DIR/.stackenv
-    for i in $STACK_ENV_VARS; do
-        echo $i=${!i} >>$TOP_DIR/.stackenv
-    done
-}
-
-# Update/create user clouds.yaml file.
-# clouds.yaml will have
-# - A `devstack` entry for the `demo` user for the `demo` project.
-# - A `devstack-admin` entry for the `admin` user for the `admin` project.
-# write_clouds_yaml
-function write_clouds_yaml {
-    # The location is a variable to allow for easier refactoring later to make it
-    # overridable. There is currently no usecase where doing so makes sense, so
-    # it's not currently configurable.
-
-    CLOUDS_YAML=/etc/openstack/clouds.yaml
-
-    sudo mkdir -p $(dirname $CLOUDS_YAML)
-    sudo chown -R $STACK_USER /etc/openstack
-
-    CA_CERT_ARG=''
-    if [ -f "$SSL_BUNDLE_FILE" ]; then
-        CA_CERT_ARG="--os-cacert $SSL_BUNDLE_FILE"
-    fi
-    # demo -> devstack
-    $PYTHON $TOP_DIR/tools/update_clouds_yaml.py \
-        --file $CLOUDS_YAML \
-        --os-cloud devstack \
-        --os-region-name $REGION_NAME \
-        --os-identity-api-version 3 \
-        $CA_CERT_ARG \
-        --os-auth-url $KEYSTONE_SERVICE_URI \
-        --os-username demo \
-        --os-password $ADMIN_PASSWORD \
-        --os-project-name demo
-
-    # alt_demo -> devstack-alt
-    $PYTHON $TOP_DIR/tools/update_clouds_yaml.py \
-        --file $CLOUDS_YAML \
-        --os-cloud devstack-alt \
-        --os-region-name $REGION_NAME \
-        --os-identity-api-version 3 \
-        $CA_CERT_ARG \
-        --os-auth-url $KEYSTONE_SERVICE_URI \
-        --os-username alt_demo \
-        --os-password $ADMIN_PASSWORD \
-        --os-project-name alt_demo
-
-    # admin -> devstack-admin
-    $PYTHON $TOP_DIR/tools/update_clouds_yaml.py \
-        --file $CLOUDS_YAML \
-        --os-region-name $REGION_NAME \
-        --os-identity-api-version 3 \
-        $CA_CERT_ARG \
-        --os-auth-url $KEYSTONE_SERVICE_URI \
-        --os-username admin \
-        --os-password $ADMIN_PASSWORD \
-        --os-project-name admin
-
-    # CLean up any old clouds.yaml files we had laying around
-    rm -f $(eval echo ~"$STACK_USER")/.config/openstack/clouds.yaml
-}
 
 # trueorfalse <True|False> <VAR>
 #

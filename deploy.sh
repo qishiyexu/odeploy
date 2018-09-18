@@ -161,6 +161,12 @@ if [ $status == "prepare" ]; then
     if is_service_enabled nova-compute; then
         clone_nova $FORCE_CLONE_REPO
     fi 
+    
+    if is_service_enabled neutron; then
+        clone_neutron $FORCE_CLONE_REPO
+    fi 
+    
+    exit 0
 fi
 
 

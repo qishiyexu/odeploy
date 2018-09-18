@@ -201,7 +201,7 @@ function configure_nova_rootwrap {
 }
 
 function configure_nova {
-    # Put config files in ``/etc/nova`` for everyone to find
+    # Put config files in ``NOVA_CONF_DIR`` for everyone to find
     sudo install -d -o nova $NOVA_CONF_DIR
 
     configure_nova_rootwrap
@@ -212,7 +212,6 @@ function configure_nova {
     fi
 
     if is_service_enabled nova-compute; then
-        # Force IP forwarding on, just on case
         sudo sysctl -w net.ipv4.ip_forward=1
 
         if [[ "$VIRT_DRIVER" = 'libvirt' ]]; then
@@ -232,9 +231,6 @@ function configure_nova {
             fi
 
         fi
-
-        # Instance Storage
-        # ----------------
 
         # Nova stores each instance in its own directory.
         sudo install -d -o nova $NOVA_INSTANCES_PATH
