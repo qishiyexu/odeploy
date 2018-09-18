@@ -29,16 +29,12 @@ set +o xtrace
 # Defaults
 # --------
 
-PLACEMENT_CONF_DIR=/etc/nova
+PLACEMENT_CONF_DIR=$NOVA_CONF_DIR
 PLACEMENT_CONF=$PLACEMENT_CONF_DIR/nova.conf
 PLACEMENT_AUTH_STRATEGY=${PLACEMENT_AUTH_STRATEGY:-placement}
-# Nova virtual environment
-if [[ ${USE_VENV} = True ]]; then
-    PROJECT_VENV["nova"]=${NOVA_DIR}.venv
-    PLACEMENT_BIN_DIR=${PROJECT_VENV["nova"]}/bin
-else
-    PLACEMENT_BIN_DIR=$(get_python_exec_prefix)
-fi
+
+
+PLACEMENT_BIN_DIR=$BIN_DIR
 PLACEMENT_UWSGI=$PLACEMENT_BIN_DIR/nova-placement-api
 PLACEMENT_UWSGI_CONF=$PLACEMENT_CONF_DIR/placement-uwsgi.ini
 

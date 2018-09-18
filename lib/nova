@@ -1,11 +1,6 @@
 #!/bin/bash
 
 
-# Save trace setting
-#_XTRACE_LIB_NOVA=$(set +o | grep xtrace)
-#set +o xtrace
-
-
 
 if is_service_enabled tls-proxy; then
     NOVA_SERVICE_PROTOCOL="https"
@@ -176,17 +171,19 @@ function cleanup_nova {
     remove_uwsgi_config "$NOVA_METADATA_UWSGI_CONF" "$NOVA_METADATA_UWSGI"
 }
 
+
+
+function clone_nova {
+    local force=$1
+    clone_repo $NOVA_REPO $NOVA_SRC_DIR force   
+}
+
 function install_nova {
-    
-    local dest=$DEST_BASE/src/nova
-    if [ ! -d "$dest" ]; then
-        git clone $NOVA_REPO $dest
-    fi
-    cd $dest
-    pip install -r $dest/requirements.txt
+    clone_nova $FORCE_CLONE_REPO
+    cd $NOVA_SRC_DIR
+    pip install -r $NOVA_SRC_DIR/requirements.txt
     python setup.py install --prefix=$DEST_BASE
     cd -
-    
 }
 
 function configure_nova_rootwrap {

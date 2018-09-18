@@ -241,3 +241,17 @@ function add_nologin_user {
     sudo adduser -s /sbin/nologin $@
 }
 
+# clone repo. If force=True, then delete existing dir.
+# clone REMOTE_REPO LOCAL_PATH FORCE
+function clone_repo {
+    local repo=$1
+    local local_path=$2
+    local force=$3
+    if [ $force == True ] && [ -d $local_path ]; then
+        rm -rf local_path
+    fi 
+    
+    if [ ! -d "$local_path" ]; then
+        git clone $repo $local_path
+    fi 
+}

@@ -15,6 +15,7 @@ TOP_DIR=$(cd $(dirname "$0") && pwd)
 FILES=$TOP_DIR/files
 
 LOCALRC=$1
+status=$2
 
 if [ "$LOCALRC" = "" ]; then
     echo "missing localrc."
@@ -23,8 +24,8 @@ fi
 source $1
 
 #source $TOP_DIR/localrc
-source $TOP_DIR/defaultrc
 source $TOP_DIR/functions
+source $TOP_DIR/defaultrc
 source $TOP_DIR/lib/functions-common
 source $TOP_DIR/lib/systemctl
 source $TOP_DIR/lib/sudoers
@@ -48,8 +49,7 @@ SERVICE_TIMEOUT=${SERVICE_TIMEOUT:-60}
 
 DEPLOYLOG=$TOP_DIR/deploylog
 function add_log {
-    echo $0 >> $DEPLOYLOG
-    echo '\n' >> $DEPLOYLOG
+    echo $1 >> $DEPLOYLOG
 }
 
 disable_firewalld
@@ -157,7 +157,12 @@ if is_service_enabled tls-proxy; then
     start_tls_proxy http-services '*' 443 $SERVICE_HOST 80
 fi
 
-source $TOP_DIR/userrc_early
+if [ $status == "prepare" ]; then
+    if is_service_enabled nova-compute; then
+        clone_nova $FORCE_CLONE_REPO
+    fi 
+fi
+
 
 if is_service_enabled keystone; then
     add_nologin_user keystone

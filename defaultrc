@@ -5,6 +5,7 @@ DATA_DIR=${DATA_DIR:-${DEST_BASE}/data}
 BIN_DIR=${BIN_DIR:-${DEST_BASE}/bin}
 PYTHON=${PYTHON:-python}
 PYTHONPATH=/openstack/lib/python2.7/site-packages/
+FORCE_CLONE_REPO=False
 
 SERVICE_IP_VERSION=${SERVICE_IP_VERSION:-4}
 if [[ "$SERVICE_IP_VERSION" == 4 ]]; then
