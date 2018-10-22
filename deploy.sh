@@ -50,11 +50,17 @@ SERVICE_TIMEOUT=${SERVICE_TIMEOUT:-60}
 
 DEPLOYLOG=$TOP_DIR/deploylog
 function add_log {
+    echo $1
     echo $1 >> $DEPLOYLOG
 }
 
+# remove former log file
+if [[ -f "$DEPLOYLOG" ]]; then
+    sudo rm -f $DEPLOYLOG
+fi
+
 function install_global_requirements {
-    echo "installing global requirements..."
+    add_log "installing global requirements..."
     git clone $GLOBAL_REQUIREMENTS_REPO $GLOBAL_REQUIREMENTS_SRC_DIR -b stable/queens 
     cd $GLOBAL_REQUIREMENTS_SRC_DIR
     pip install -c upper-constraints.txt -r requirements.txt 
@@ -62,7 +68,7 @@ function install_global_requirements {
 }
 
 if [ "$status" = "prepare" ]; then
-    echo "preparing for the installation..."
+    add_log "preparing for the installation..."
     if is_service_enabled keystone; then
         clone_repo $KEYSTONE_REPO $KEYSTONE_SRC_DIR true 
     fi
@@ -100,6 +106,9 @@ fi
 
 if [[ "`echo $PYTHONPATH`" = "" ]]; then
     export PYTHONPATH="$DEST_BASE/lib/python2.7/site-packages/:$PYTHONPATH"
+    add_log "set python path"
+else
+    add_log "`echo $PYTHONPATH`"
 fi
 
 yum_install_if_not_exist yum-utils git
