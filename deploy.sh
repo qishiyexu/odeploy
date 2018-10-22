@@ -98,7 +98,7 @@ if [ -z "`grep controller$ /etc/hosts |grep controller`" ]; then
     sudo echo "$CONTROLLER_IP controller" >> /etc/hosts
 fi
 
-if [[ "`echo $PYTHONPATH| grep $DEST_BASE/lib`" == "" ]]; then
+if [[ "`echo $PYTHONPATH`" = "" ]]; then
     export PYTHONPATH="$DEST_BASE/lib/python2.7/site-packages/:$PYTHONPATH"
 fi
 
@@ -188,18 +188,6 @@ source $TOP_DIR/userrc_early
 if is_service_enabled tls-proxy; then
     echo "export OS_CACERT=$INT_CA_DIR/ca-chain.pem" >> $TOP_DIR/userrc_early
     start_tls_proxy http-services '*' 443 $SERVICE_HOST 80
-fi
-
-if [ $status == "prepare" ]; then
-    if is_service_enabled nova-compute; then
-        clone_nova $FORCE_CLONE_REPO
-    fi 
-    
-    if is_service_enabled neutron; then
-        clone_neutron $FORCE_CLONE_REPO
-    fi 
-    
-    exit 0
 fi
 
 
