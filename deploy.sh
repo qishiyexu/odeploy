@@ -54,6 +54,7 @@ function add_log {
 }
 
 if [ "$status" = "prepare" ]; then
+    echo "preparing for the installation..."
     if is_service_enabled keystone; then
         clone_repo $KEYSTONE_REPO $KEYSTONE_SRC_DIR true 
     fi
@@ -66,6 +67,7 @@ if [ "$status" = "prepare" ]; then
     if is_service_enabled neutron; then
         clone_repo $NEUTRON_REPO $NEUTRON_SRC_DIR true 
     fi
+    exit 0
 fi
 
 disable_firewalld
