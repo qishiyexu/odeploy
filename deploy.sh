@@ -98,7 +98,7 @@ if [ -z "`grep controller$ /etc/hosts |grep controller`" ]; then
     sudo echo "$CONTROLLER_IP controller" >> /etc/hosts
 fi
 
-if [[ `echo $PYTHONPATH` == "" or "`echo $PYTHONPATH| grep $DEST_BASE/lib`" == "" ]]; then
+if [[ "`echo $PYTHONPATH| grep $DEST_BASE/lib`" == "" ]]; then
     export PYTHONPATH="$DEST_BASE/lib/python2.7/site-packages/:$PYTHONPATH"
 fi
 
