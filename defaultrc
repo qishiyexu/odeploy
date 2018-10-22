@@ -281,13 +281,14 @@ QEMU_SRC_DIR=$DEST_BASE/src/qemu
 
 
 ## ------------------ REPO ------------------
-KEYSTONE_REPO=http://10.142.233.181:8888/ctg-cache/keystone.git
-GLANCE_REPO=http://10.142.233.181:8888/ctg-cache/glance.git
-NOVA_REPO=http://10.142.233.181:8888/ctg-cache/nova.git
-NEUTRON_REPO=http://10.142.233.181:8888/ctg-cache/neutron.git
-HORIZON_REPO=http://10.142.233.181:8888/ctg-cache/horizon.git
-LIBVIRT_REPO=http://10.142.233.181:8888/chenzhao/libvirt.git
-QEMU_REPO=http://10.142.233.181:8888/ctg-cache/qemu.git
+DEFAULT_USERNAME=chenzhao
+KEYSTONE_REPO=http://$DEFAULT_USERNAME@10.142.233.181:8888/ctg-cache/keystone.git
+GLANCE_REPO=http://$DEFAULT_USERNAME@10.142.233.181:8888/ctg-cache/glance.git
+NOVA_REPO=http://$DEFAULT_USERNAME@10.142.233.181:8888/ctg-cache/nova.git
+NEUTRON_REPO=http://$DEFAULT_USERNAME@10.142.233.181:8888/ctg-cache/neutron.git
+HORIZON_REPO=http://$DEFAULT_USERNAME@10.142.233.181:8888/ctg-cache/horizon.git
+LIBVIRT_REPO=http://$DEFAULT_USERNAME@10.142.233.181:8888/chenzhao/libvirt.git
+QEMU_REPO=http://$DEFAULT_USERNAME@10.142.233.181:8888/ctg-cache/qemu.git
 
 
 
