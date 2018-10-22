@@ -279,6 +279,10 @@ HORIZON_APACHE_ROOT="/dashboard"
 LIBVIRT_SRC_DIR=$DEST_BASE/src/libvirt
 QEMU_SRC_DIR=$DEST_BASE/src/qemu
 
+## ------------------ global requirements ------------------
+GLOBAL_REQUIREMENTS_REPO=https://github.com/openstack/requirements.git
+GLOBAL_REQUIREMENTS_SRC_DIR=$DEST_BASE/src/requirements
+
 
 ## ------------------ REPO ------------------
 DEFAULT_USERNAME=chenzhao
@@ -289,6 +293,7 @@ NEUTRON_REPO=http://$DEFAULT_USERNAME@10.142.233.181:8888/ctg-cache/neutron.git
 HORIZON_REPO=http://$DEFAULT_USERNAME@10.142.233.181:8888/ctg-cache/horizon.git
 LIBVIRT_REPO=http://$DEFAULT_USERNAME@10.142.233.181:8888/chenzhao/libvirt.git
 QEMU_REPO=http://$DEFAULT_USERNAME@10.142.233.181:8888/ctg-cache/qemu.git
+
 
 
 

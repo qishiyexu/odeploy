@@ -53,6 +53,14 @@ function add_log {
     echo $1 >> $DEPLOYLOG
 }
 
+function install_global_requirements {
+    echo "installing global requirements..."
+    git clone $GLOBAL_REQUIREMENTS_REPO $GLOBAL_REQUIREMENTS_SRC_DIR -b stable/queens 
+    cd $GLOBAL_REQUIREMENTS_SRC_DIR
+    pip install -c upper-constraints.txt -r requirements.txt 
+    cd -
+}
+
 if [ "$status" = "prepare" ]; then
     echo "preparing for the installation..."
     if is_service_enabled keystone; then
@@ -67,6 +75,8 @@ if [ "$status" = "prepare" ]; then
     if is_service_enabled neutron; then
         clone_repo $NEUTRON_REPO $NEUTRON_SRC_DIR true 
     fi
+    
+    install_global_requirements
     exit 0
 fi
 
