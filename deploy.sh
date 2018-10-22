@@ -75,6 +75,11 @@ if [ "$status" = "prepare" ]; then
     if is_service_enabled neutron; then
         clone_repo $NEUTRON_REPO $NEUTRON_SRC_DIR true 
     fi
+    if is_service_enabled horizon; then
+        if [ ! -d "$HORIZON_SRC_DIR" ]; then
+            git clone $HORIZON_REPO $HORIZON_SRC_DIR
+        fi
+    fi
     
     install_global_requirements
     exit 0

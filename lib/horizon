@@ -134,7 +134,7 @@ function install_horizon {
     fi
     
     cd $HORIZON_SRC_DIR
-    pip install -r $HORIZON_SRC_DIR/requirements.txt
+  #  pip install -r $HORIZON_SRC_DIR/requirements.txt
     python setup.py install --prefix=$DEST_BASE
     cd -
     

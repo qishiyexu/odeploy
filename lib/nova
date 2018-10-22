@@ -181,7 +181,7 @@ function clone_nova {
 function install_nova {
     clone_nova $FORCE_CLONE_REPO
     cd $NOVA_SRC_DIR
-    pip install -r $NOVA_SRC_DIR/requirements.txt
+ #   pip install -r $NOVA_SRC_DIR/requirements.txt
     python setup.py install --prefix=$DEST_BASE
     cd -
 }
