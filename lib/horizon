@@ -52,6 +52,7 @@ function configure_horizon {
     # Message catalog compilation is handled by Django admin script,
     # so compiling them after the installation avoids Django installation twice.
     (cd $HORIZON_SRC_DIR; $PYTHON manage.py compilemessages)
+    (cd $HORIZON_SRC_DIR; $PYTHON manage.py collectstatic)
 
     # ``local_settings.py`` is used to override horizon default settings.
     local local_settings=$HORIZON_DIR/openstack_dashboard/local/local_settings.py

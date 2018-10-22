@@ -23,6 +23,7 @@ if [ "$LOCALRC" = "" ]; then
 fi
 source $1
 
+
 #source $TOP_DIR/localrc
 source $TOP_DIR/functions
 source $TOP_DIR/defaultrc
@@ -51,6 +52,21 @@ DEPLOYLOG=$TOP_DIR/deploylog
 function add_log {
     echo $1 >> $DEPLOYLOG
 }
+
+if [ "$status" = "prepare" ]; then
+    if is_service_enabled keystone; then
+        clone_repo $KEYSTONE_REPO $KEYSTONE_SRC_DIR true 
+    fi
+    if is_service_enabled glance; then
+        clone_repo $GLANCE_REPO $GLANCE_SRC_DIR true 
+    fi
+    if is_service_enabled nova; then
+        clone_repo $NOVA_REPO $NOVA_SRC_DIR true 
+    fi
+    if is_service_enabled neutron; then
+        clone_repo $NEUTRON_REPO $NEUTRON_SRC_DIR true 
+    fi
+fi
 
 disable_firewalld
 disable_selinux
@@ -230,17 +246,3 @@ if is_service_enabled horizon; then
 fi
 
 
-openrc=$DEST_BASE/admin-openrc
-if [[ -f $openrc ]]; then
-    sudo rm -f $openrc
-fi
-cat <<EOF | sudo tee $openrc
-    export OS_PROJECT_DOMAIN_NAME=Default
-    export OS_USER_DOMAIN_NAME=Default
-    export OS_PROJECT_NAME=admin
-    export OS_USERNAME=admin
-    export OS_PASSWORD=$ADMIN_PASSWORD
-    export OS_AUTH_URL=http://controller:5000/v3
-    export OS_IDENTITY_API_VERSION=3
-    export OS_IMAGE_API_VERSION=2
-EOF
