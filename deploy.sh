@@ -106,9 +106,6 @@ fi
 
 if [[ "`echo $PYTHONPATH`" = "" ]]; then
     export PYTHONPATH="$DEST_BASE/lib/python2.7/site-packages/:$PYTHONPATH"
-    add_log "set python path"
-else
-    add_log "`echo $PYTHONPATH`"
 fi
 
 yum_install_if_not_exist yum-utils git
