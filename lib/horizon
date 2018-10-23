@@ -99,6 +99,7 @@ function configure_horizon {
     \" $FILES/apache-horizon.template >$horizon_conf"
     
     cp $HORIZON_DIR/local/local_settings.py.example $HORIZON_DIR/local/local_settings.py
+    cp $HORIZON_DIR $PYTHONPATH
 
     enable_apache_site horizon
 }
@@ -134,7 +135,7 @@ function install_horizon {
     fi
     
     cd $HORIZON_SRC_DIR
-  #  pip install -r $HORIZON_SRC_DIR/requirements.txt
+    pip install -r $HORIZON_SRC_DIR/requirements.txt
     python setup.py install --prefix=$DEST_BASE
     cd -
     
