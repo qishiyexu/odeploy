@@ -55,7 +55,7 @@ function configure_horizon {
     (cd $HORIZON_SRC_DIR; $PYTHON manage.py collectstatic)
 
     # ``local_settings.py`` is used to override horizon default settings.
-    local local_settings=$HORIZON_DIR/openstack_dashboard/local/local_settings.py
+    local local_settings=$HORIZON_DIR/local/local_settings.py
     cp $HORIZON_SETTINGS $local_settings
 
     _horizon_config_set $local_settings "" WEBROOT \"$HORIZON_APACHE_ROOT/\"
