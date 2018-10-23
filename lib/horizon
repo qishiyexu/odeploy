@@ -99,7 +99,7 @@ function configure_horizon {
     \" $FILES/apache-horizon.template >$horizon_conf"
     
     cp $HORIZON_DIR/local/local_settings.py.example $HORIZON_DIR/local/local_settings.py
-    cp $HORIZON_DIR $PYTHONPATH
+    cp -r $HORIZON_DIR $PYTHONPATH
 
     enable_apache_site horizon
 }
